@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
 from typing import List
+
+from fastapi import APIRouter, HTTPException, status
 
 from src.models.search import SearchQueryRequest, SearchQueryResponse, SearchResult
 from src.services.search_service import SearchService
@@ -27,7 +28,9 @@ async def search_query(request: SearchQueryRequest) -> SearchQueryResponse:
 
         # Convert results to SearchResult models
         search_results = [
-            SearchResult(id=result["id"], score=result["score"], payload=result["payload"])
+            SearchResult(
+                id=result["id"], score=result["score"], payload=result["payload"]
+            )
             for result in results
         ]
 
@@ -44,4 +47,3 @@ async def search_query(request: SearchQueryRequest) -> SearchQueryResponse:
 async def health_check():
     """Health check endpoint for the search service."""
     return {"status": "healthy", "service": "search"}
-

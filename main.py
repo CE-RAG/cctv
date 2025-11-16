@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.controllers import search_router
+from src.controllers import image_search_router, search_router
 
 app = FastAPI(
     title="CCTV Vehicle Search API",
@@ -20,6 +20,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(search_router)
+app.include_router(image_search_router)
 
 
 @app.get("/")

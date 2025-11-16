@@ -1,8 +1,8 @@
 # CCTV
 
-current embedding -> BAAI/bge-small-en-v1.5 (33M params)
+current embedding -> SigLIP2 (google/siglip2-base-patch16-224) for image-to-text similarity search
 
-structrue modular under `src` directory
+structure modular under `src` directory
 
 ## Setup
 
@@ -16,9 +16,9 @@ sync qdrant client dependencies
 ```
 uv sync
 ```
-run python script to insert data
+run python script to insert data with SigLIP2 embeddings
 ```
-uv python3 import_to_qdrant.py
+uv python3 import_to_qdrant.py --generate-embeddings --image-dir car_images
 ```
 
 ### Running up project
@@ -26,9 +26,10 @@ uv python3 import_to_qdrant.py
 uv run main.py
 ```
 
-## Endpoint (แก้ได้ตามใจ แล้วแต่ชอบ)
+## Endpoints (แก้ได้ตามใจ แล้วแต่ชอบ)
 
-POST `api/v1/search/query`
+### POST `api/v1/search/query`
+Original endpoint for vector search with pre-computed embeddings
 
 ```
 {
@@ -50,4 +51,64 @@ curl --location 'http://localhost:8000/api/v1/search/query' \
   "start_date": "2025-01-01",
   "limit": 10
 }'
+```
+
+### POST `api/v1/images/search`
+New endpoint for image-to-text similarity search using SigLIP2
+
+```
+{
+  "text_query": "red sports car",
+  "collection_name": "car_embeddings",
+  "similarity_threshold": 0.7,
+  "start_date": "2024-01-01",
+  "end_date": "2024-12-31",
+  "limit": 10
+}
+```
+
+or curl
+```
+curl --location 'http://localhost:8000/api/v1/images/search' \
+--header 'Content-Type: application/json' \
+--data '{
+  "text_query": "red sports car",
+  "collection_name": "car_embeddings",
+  "similarity_threshold": 0.7,
+  "start_date": "2024-01-01",
+  "end_date": "2024-12-31",
+  "limit": 10
+}'
+```
+
+### POST `api/v1/images/upload-and-search`
+Upload an image and search for similar images using text query
+
+```
+curl --location 'http://localhost:8000/api/v1/images/upload-and-search' \
+--form 'image=@"/path/to/your/image.jpg"' \
+--form 'text_query="red sports car"' \
+--form 'collection_name="car_embeddings"' \
+--form 'similarity_threshold=0.7' \
+--form 'limit=10'
+```
+
+## Testing
+
+### Test API Endpoints
+Run the test script to verify all endpoints are working correctly:
+```
+uv python test_api.py
+```
+
+### Test Image-to-Text Search
+Run the example script to see the image-to-text search in action:
+```
+uv python example_usage.py
+```
+
+### Test SigLIP2 Embeddings
+Run the embedding test script to verify SigLIP2 is working:
+```
+uv python test_image_search.py
 ```

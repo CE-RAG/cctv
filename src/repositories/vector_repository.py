@@ -1,5 +1,5 @@
-from typing import List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List
 
 from src.clients import QdrantClient, get_qdrant_client
 
@@ -39,7 +39,7 @@ class VectorRepository:
         print("vector query: ", query_embedding)
         results = self.client.search(
             collection_name=collection_name,
-            query_vector=("semantic", query_embedding),
+            query_vector=query_embedding,
             score_threshold=similarity_threshold,
             limit=search_limit,
         )
@@ -124,4 +124,3 @@ class VectorRepository:
             ]
 
         return filtered_results
-

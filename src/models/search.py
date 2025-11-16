@@ -1,5 +1,6 @@
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any
 
 
 class SearchQueryRequest(BaseModel):
@@ -50,11 +51,52 @@ class SearchResult(BaseModel):
     payload: Dict[str, Any] = Field(..., description="Result payload data")
 
 
+class ImageTextSearchRequest(BaseModel):
+    """Request model for image-to-text similarity search."""
+
+    text_query: str = Field(..., description="Text query to search for similar images")
+    collection_name: str = Field(
+        default="car_embeddings", description="Name of the Qdrant collection"
+    )
+    similarity_threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Minimum similarity score threshold (0.0 to 1.0)",
+    )
+    start_date: Optional[str] = Field(
+        default=None,
+        description="Optional start date filter (ISO format or YYYY-MM-DD)",
+    )
+    end_date: Optional[str] = Field(
+        default=None,
+        description="Optional end date filter (ISO format or YYYY-MM-DD)",
+    )
+    limit: int = Field(
+        default=10, ge=1, le=100, description="Maximum number of results to return"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text_query": "red sports car",
+                "collection_name": "car_embeddings",
+                "similarity_threshold": 0.7,
+                "start_date": "2024-01-01",
+                "end_date": "2024-12-31",
+                "limit": 10,
+            }
+        }
+
+
 class SearchQueryResponse(BaseModel):
     """Response model for semantic search query."""
 
     results: List[SearchResult] = Field(..., description="List of search results")
     count: int = Field(..., description="Number of results returned")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Optional metadata"
+    )
 
     class Config:
         json_schema_extra = {
@@ -73,4 +115,3 @@ class SearchQueryResponse(BaseModel):
                 "count": 1,
             }
         }
-

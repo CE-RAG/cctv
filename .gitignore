@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Docker volumes mappign
+cache/
+
+# macos
+.DS_Store
+*.DS_Store

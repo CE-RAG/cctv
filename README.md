@@ -1,4 +1,4 @@
-# CCTV Siglib2
+# CCTV Siglip
 
 ## Text embeddings
 ```sh

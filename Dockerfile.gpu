@@ -8,12 +8,15 @@ WORKDIR /app
 # Set non-interactive frontend for apt-get
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Python and other system dependencies
+# Install system dependencies and add deadsnakes PPA for Python 3.11
 RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y \
     python3.11 \
-    python3.11-pip \
     python3.11-venv \
     python3.11-dev \
+    python3.11-distutils \
     libgomp1 \
     libglib2.0-0 \
     libsm6 \
@@ -25,24 +28,21 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create Python 3.11 as default
-RUN ln -s /usr/bin/python3.11 /usr/bin/python && \
-    ln -s /usr/bin/pip3 /usr/bin/pip
+# Install pip for Python 3.11
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
-# Upgrade pip
-RUN pip install --upgrade pip
+# Create Python 3.11 as default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 
 # Install uv for dependency management
-RUN pip install uv
+RUN python3.11 -m pip install --no-cache-dir uv
 
 # Copy dependency files first (for better Docker layer caching)
 COPY pyproject.toml uv.lock* ./
 
-# Create virtual environment and install dependencies
-RUN uv venv /opt/venv && \
-    . /opt/venv/bin/activate && \
-    pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision && \
-    uv sync --frozen --no-dev
+# Sync dependencies using uv (it handles virtual environment automatically)
+RUN uv sync --frozen --no-dev
 
 # Copy application code
 COPY main.py .
@@ -54,10 +54,11 @@ EXPOSE 8000
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV TRANSFORMERS_CACHE=/app/cache
-ENV PATH="/opt/venv/bin:$PATH"
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 # Create cache directory for model downloads
 RUN mkdir -p /app/cache
 
-# Run the application using the virtual environment
-CMD ["/opt/venv/bin/python", "main.py"]
+# Run the application using uv
+CMD ["uv", "run", "main.py"]

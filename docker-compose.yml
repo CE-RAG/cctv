@@ -2,7 +2,7 @@ services:
   siglip:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.gpu
     ports:
       - "8000:8000"
     volumes:

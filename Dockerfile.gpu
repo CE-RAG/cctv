@@ -1,64 +1,45 @@
-# Dockerfile for GPU-enabled SigLIP2API
-# Based on NVIDIA CUDA image with Python 3.11
 FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
-# Set working directory
 WORKDIR /app
 
-# Set non-interactive frontend for apt-get
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies and add deadsnakes PPA for Python 3.11
+# Install Python 3.13 from deadsnakes
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa \
     && apt-get update && apt-get install -y \
-    python3.11 \
-    python3.11-venv \
-    python3.11-dev \
-    python3.11-distutils \
+    python3.13 \
+    python3.13-venv \
+    python3.13-dev \
     libgomp1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
     libgl1-mesa-glx \
-    git \
-    wget \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pip for Python 3.11
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+# Install pip and uv
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.13 && \
+    python3.13 -m pip install --no-cache-dir uv
 
-# Create Python 3.11 as default
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 && \
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
-
-# Install uv for dependency management
-RUN python3.11 -m pip install --no-cache-dir uv
-
-# Copy dependency files first (for better Docker layer caching)
+# Copy and install dependencies
 COPY pyproject.toml uv.lock* ./
-
-# Sync dependencies using uv (it handles virtual environment automatically)
 RUN uv sync --frozen --no-dev
 
-# Copy application code
+# Copy application
 COPY main.py .
 COPY images ./images
 
-# Expose the port the server runs on
 EXPOSE 8000
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV TRANSFORMERS_CACHE=/app/cache
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
-# Create cache directory for model downloads
 RUN mkdir -p /app/cache
 
-# Run the application using uv
 CMD ["uv", "run", "main.py"]

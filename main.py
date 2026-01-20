@@ -18,7 +18,7 @@ class SigLIP2API(ls.LitAPI):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         adapter_path = os.path.join(current_dir, "lora_adapter")
         
-        base_model_id = "google/siglip2-base-patch16-224"
+        base_model_id = "google/siglip-so400m-patch14-384"
 
         # Automatically detect and use CUDA if available
         if device == "auto":

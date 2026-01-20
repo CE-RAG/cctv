@@ -2,6 +2,7 @@ import litserve as ls
 import numpy as np
 import torch
 
+from peft import PeftModel
 from PIL import Image
 from transformers import AutoModel, AutoProcessor
 from transformers.image_utils import load_image

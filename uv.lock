@@ -39,6 +39,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "litserve" },
+    { name = "pert" },
     { name = "pillow" },
     { name = "torch" },
     { name = "transformers" },
@@ -47,6 +48,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "litserve", specifier = ">=0.2.16" },
+    { name = "pert", specifier = ">=2019.11" },
     { name = "pillow", specifier = ">=12.0.0" },
     { name = "torch", specifier = ">=2.9.1" },
     { name = "transformers", specifier = ">=4.57.3" },
@@ -579,6 +581,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469, upload-time = "2025-04-19T11:48:57.875Z" },
 ]
+
+[[package]]
+name = "pert"
+version = "2019.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a3/9c/0fc1104f32d5786aef112d70dbaf6522e7a7e53144bda4d9cb0806f64cc7/pert-2019.11.tar.gz", hash = "sha256:5d6cc356702ba798384efa717bbc3c433ad342f949cbbdaf2f5e32da8bf8e335", size = 6276, upload-time = "2019-11-08T11:46:39.644Z" }
 
 [[package]]
 name = "pillow"

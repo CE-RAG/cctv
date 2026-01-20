@@ -1,6 +1,7 @@
 import litserve as ls
 import numpy as np
 import torch
+
 from PIL import Image
 from transformers import AutoModel, AutoProcessor
 from transformers.image_utils import load_image
@@ -12,7 +13,9 @@ class SigLIP2API(ls.LitAPI):
     """
 
     def setup(self, device="auto"):
-        model_id = "google/siglip2-base-patch16-224"
+        base_model_id = "google/siglip2-base-patch16-224"
+        
+        adapter_path = "path/to/your/finetuned_folder"
 
         # Automatically detect and use CUDA if available
         if device == "auto":
@@ -21,10 +24,17 @@ class SigLIP2API(ls.LitAPI):
             self.device = device
 
         print(f"Using device: {self.device}")
+        
+        base_model = AutoModel.from_pretrained(base_model_id)
+        # 2. Load and attach the Adapter (LoRA)
+        # This looks for adapter_config.json and adapter_model.safetensors
+        self.model = PeftModel.from_pretrained(base_model, adapter_path)
+        
+        # 3. Move to device and set to eval
+        self.model.to(self.device).eval()
 
-        # Load model with appropriate device
-        self.model = AutoModel.from_pretrained(model_id).eval().to(self.device)
-        self.processor = AutoProcessor.from_pretrained(model_id)
+        # 4. Load Processor from your local path (to use your custom tokenizer/special tokens)
+        self.processor = AutoProcessor.from_pretrained(adapter_path)
 
         # If using CUDA, optimize for GPU
         if self.device == "cuda":

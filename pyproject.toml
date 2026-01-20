@@ -8,6 +8,8 @@ dependencies = [
     "litserve>=0.2.16",
     "peft>=0.18.1",
     "pillow>=12.0.0",
+    "protobuf>=6.33.4",
+    "sentencepiece>=0.2.1",
     "torch>=2.9.1",
     "transformers>=4.57.3",
 ]

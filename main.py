@@ -15,7 +15,7 @@ class SigLIP2API(ls.LitAPI):
     def setup(self, device="auto"):
         base_model_id = "google/siglip2-base-patch16-224"
         
-        adapter_path = "path/to/your/finetuned_folder"
+        adapter_path = "./lora_adapter"
 
         # Automatically detect and use CUDA if available
         if device == "auto":

@@ -33,6 +33,9 @@ RUN uv sync --frozen --no-dev
 COPY main.py .
 COPY images ./images
 
+# Copy LoRA adapter
+COPY lora_adapter ./lora_adapter
+
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1

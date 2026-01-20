@@ -1,6 +1,7 @@
 import litserve as ls
 import numpy as np
 import torch
+import os
 
 from peft import PeftModel
 from PIL import Image

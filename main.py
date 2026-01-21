@@ -7,7 +7,7 @@ from peft import PeftModel
 from PIL import Image
 from transformers import AutoModel, AutoProcessor
 from transformers.image_utils import load_image
-
+from preprocess import preprocess_query_to_english
 
 class SigLIP2API(ls.LitAPI):
     """
@@ -135,8 +135,10 @@ class SigLIP2API(ls.LitAPI):
                 results.append({"path": path, "error": "Failed to process image"})
                 
         return results
+    
 
     def get_text_embedding(self, text: str) -> np.ndarray:
+        text = preprocess_query_to_english(text)
         inputs = self.processor(
             text=[text],
             padding="max_length",
@@ -148,6 +150,7 @@ class SigLIP2API(ls.LitAPI):
 
         text_features = text_features / text_features.norm(p=2)
         return text_features.cpu().numpy()
+    
 
     def decode_request(self, request):
         """
@@ -238,7 +241,7 @@ class SigLIP2API(ls.LitAPI):
 
     def encode_response(self, output):
         return output
-
+    
 
 if __name__ == "__main__":
     api = SigLIP2API()

@@ -36,7 +36,7 @@ COPY preprocess.py .
 COPY thai_dict.json .
 
 # Copy LoRA adapter
-COPY lora_adapter ./lora_adapter
+COPY lora_adapter2 ./lora_adapter2
 
 EXPOSE 8000
 

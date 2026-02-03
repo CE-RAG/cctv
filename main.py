@@ -16,7 +16,7 @@ class SigLIP2API(ls.LitAPI):
 
     def setup(self, device="auto"):
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        adapter_path = os.path.join(current_dir, "lora_adapter")
+        adapter_path = os.path.join(current_dir, "lora_adapter2")
         
         base_model_id = "google/siglip-so400m-patch14-384"
 
